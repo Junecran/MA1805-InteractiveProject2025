@@ -6,7 +6,12 @@ let enemies = [];
 let showMenu = true;   // menu overlay is visible
 let offsetX = 0;
 let offsetY = 0;
-
+let overlayMessage = "";
+let showTemporaryMessage = false;
+let messageTimer = 0;
+let messageDelay = 20
+let gameEnded = false;
+let keys = {};
 
 
   // Map Setup //
@@ -50,11 +55,35 @@ let maze = [
   offsetX = (width - cols * tileSize) / 2;
   offsetY = (height - rows * tileSize) / 2;
 }
+function isGameAtOrigin() {
+  // Player start position
+  if (player.x !== 10 || player.y !== 28) return false;
+
+  // Enemy start positions
+  let startEnemies = [
+    [8, 1],
+    [7, 9],
+    [12, 5]
+  ];
+
+  for (let i = 0; i < enemies.length; i++) {
+    if (enemies[i].x !== startEnemies[i][0] || enemies[i].y !== startEnemies[i][1]) {
+      return false;
+    }
+  }
+
+  // If all match, game is at origin
+  return true;
+}
 
 function drawLetter(x, y, letter, c) {
   fill(c);
   text(letter, x, y);
 }
+
+function OverlayMessage(msg) {
+  overlayMessage = msg;
+} 
 
 function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
@@ -75,6 +104,7 @@ function setup() {
 
   enemies.push(new Enemy(8, 1));
   enemies.push(new Enemy(7, 9));
+  enemies.push(new Enemy(12, 5, true));
 }
 
 
@@ -95,36 +125,65 @@ function drawMaze() {
 
   // Player Controls //
 function keyPressed() {
-  // Toggle menu overlay
-  if (keyCode === 32) { // SPACE
+  keys[key] = true;
+
+  if (keyCode === 32) { // SPACE toggles menu
+    if (showMenu) gameEnded = false;
     showMenu = !showMenu;
   }
+}
+function keyReleased() {
+  keys[key] = false;
+}
 
-  // Player controls only when menu is not visible
-  if (!showMenu) {
-    if (keyCode === LEFT_ARROW)  player.move(-1, 0);
-    if (keyCode === RIGHT_ARROW) player.move(1, 0);
-    if (keyCode === UP_ARROW)    player.move(0, -1);
-    if (keyCode === DOWN_ARROW)  player.move(0, 1);
+function mousePressed() {
+  if (showMenu) {
+    let buttonWidth = width * 0.45 * 0.4;  // same as above
+    let barWidth = width * 0.45;
+    barWidth = constrain(barWidth, 250, 600);
+    let barHeight = floor(width * 0.08 * 0.45);
+    let centerY = height * 0.45;
+    let buttonHeight = barHeight * 0.8;
+    let buttonX = width/2 - buttonWidth/2;
+    let buttonY = centerY + barHeight * 2.5;
 
-    if (key === 'a' || key === 'A') player.move(-1, 0);
-    if (key === 'd' || key === 'D') player.move(1, 0);
-    if (key === 'w' || key === 'W') player.move(0, -1);
-    if (key === 's' || key === 'S') player.move(0, 1);
+    if (mouseX >= buttonX && mouseX <= buttonX + buttonWidth &&
+        mouseY >= buttonY && mouseY <= buttonY + buttonHeight) {
+      resetGame();
+    }
   }
 }
 
 
-function drawMenuOverlay() {
+function resetGame() {
+  // Reset player
+  player = new Player(10, 28);
+
+  // Reset enemies
+  enemies = [];
+  enemies.push(new Enemy(8, 1));
+  enemies.push(new Enemy(7, 9));
+  enemies.push(new Enemy(12, 5, true));
+
+  // Reset game state
+  gameEnded = false;
+  showMenu = true;
+  showTemporaryMessage = false;
+  overlayMessage = "";
+}
+
+  // Main Game Menu //
+function gameMenu() {
   push();
 
-  // Dim background
-  fill(0, 180);
+// Menu Background
+  fill(255);
   rect(0, 0, width, height);
 
   textAlign(CENTER, CENTER);
   textStyle(BOLD);
   noStroke();
+
 
   // ========== RESPONSIVE SIZES ==========
   let logoSize = width * 0.08;           // scales with window width
@@ -169,21 +228,69 @@ function drawMenuOverlay() {
   // Placeholder text
   noStroke();
   fill(120);
-  textSize(logoSize * 0.35);
-  text("Search for a safe path...", width/2, centerY + barHeight * 0.1);
+  textSize(logoSize * 0.30);
+  text("Search for a safe path", width/2, centerY + barHeight * 0.5);
 
   // ========== START MESSAGE ==========
   textSize(logoSize * 0.25);
   fill(255);
-  text("Press SPACE to Start / Resume", width/2, centerY + barHeight * 1.8);
+  text("Press SPACE to Start ", width/2, centerY + barHeight * 1.8);
+
+let buttonWidth = barWidth * 0.4;
+let buttonHeight = barHeight * 0.8;
+let buttonX = width/2 - buttonWidth/2;
+let buttonY = centerY + barHeight * 2.5;
+
+// Change color based on game state
+if (isGameAtOrigin()) {
+  fill(200); // gray if already at origin
+} else {
+  fill(255, 100, 100); // red if game has changed
+}
+
+rect(buttonX, buttonY, buttonWidth, buttonHeight, 10);
+
+fill(255);
+textSize(logoSize * 0.25);
+text("Reset Game", width/2, buttonY + buttonHeight/2);
 
   pop();
+  
 }
 
 
   // Game Creation //
+
 function draw() {
   background(0);
+
+if (!showMenu) {
+  player.update();
+}
+
+   if (showTemporaryMessage) {
+    // Show the game screen but freeze enemies & player
+    drawMaze();
+    player.show();
+    for (let enemy of enemies) enemy.show();
+
+    // Draw the message
+    push();
+    fill(255);
+    textAlign(CENTER, CENTER);
+    textSize(50);
+    text(overlayMessage, width / 2, height / 2);
+    
+pop();
+    // Countdown
+    messageTimer--;
+    if (messageTimer <= 0) {
+        showTemporaryMessage = false;
+        showMenu = true;   // finally open the menu
+    }
+
+    return;    // stop the rest of draw()
+}
 
   // Draw the maze and characters
   drawMaze();
@@ -193,32 +300,41 @@ function draw() {
     enemy.show();
   }
 
-  // Check win/lose only if menu is not visible
-  if (!showMenu) {
-    if (maze[player.y][player.x] === 3) {
-      showMenu = true;  // bring up menu when winning
-      displayOverlayMessage("You Win!");
-    }
-    for (let enemy of enemies) {
-      if (enemy.x === player.x && enemy.y === player.y) {
-        showMenu = true;  // bring up menu when losing
-        displayOverlayMessage("Game Over!");
-      }
-    }
-  }
 
+  // Check win/lose only if menu is not visible
+if (!gameEnded && maze[player.y][player.x] === 3) {
+  gameEnded = true;
+  overlayMessage = "You Win!";
+  showTemporaryMessage = true;
+  messageTimer = messageDelay;
+}
+
+// LOSE (only run once)
+for (let enemy of enemies) {
+  if (!gameEnded && enemy.x === player.x && enemy.y === player.y) {
+    gameEnded = true;
+    overlayMessage = "Game Over!";
+    showTemporaryMessage = true;
+    messageTimer = messageDelay;
+  }
+}
+  
+ 
   // Draw menu overlay if visible
-  if (showMenu) drawMenuOverlay();
+  if (showMenu) gameMenu();
+  
 }
 
   
    // -- Enemy and Player -- //
 class Player {
+  
 constructor(x, y) {
   this.x = x;
   this.y = y;
-  this.dx = 0;   
-  this.dy = 0; 
+  this.dx = 0;
+  this.dy = 0;
+  this.moveCooldown = 0;   // You forgot this!
 }
   // Player's model //
 show() { 
@@ -231,9 +347,26 @@ show() {
 }
 
  // Update position based on dx/dy
-  update() {
-    this.tryMove(this.dx, this.dy);
+update() {
+  if (this.moveCooldown > 0) {
+    this.moveCooldown--;
+    return;
   }
+
+  this.moveCooldown = 5;
+
+  // Arrow keys
+  if (keys['ArrowLeft'])  this.tryMove(-1, 0);
+  if (keys['ArrowRight']) this.tryMove(1, 0);
+  if (keys['ArrowUp'])    this.tryMove(0, -1);
+  if (keys['ArrowDown'])  this.tryMove(0, 1);
+
+  // WASD
+  if (keys['a'] || keys['A']) this.tryMove(-1, 0);
+  if (keys['d'] || keys['D']) this.tryMove(1, 0);
+  if (keys['w'] || keys['W']) this.tryMove(0, -1);
+  if (keys['s'] || keys['S']) this.tryMove(0, 1);
+}
 
   // Move manually
   move(dx, dy) {
@@ -258,64 +391,62 @@ show() {
 }
 
 class Enemy {
-  constructor (x, y) {
+  constructor(x, y, alwaysChase = false) {
     this.x = x;
     this.y = y;
-    this.moveCooldown = 0; // frames until next move
-    this.lockOnDistance = 5; // distance at which enemy will start chasing
+    this.alwaysChase = alwaysChase;
+    
+    // Faster if always chasing
+    this.moveCooldownMax = this.alwaysChase ? 4 : 10; // lower = faster
+    this.moveCooldown = 0;
+    this.lockOnDistance = 5;
   }
- 
-   // Enemy Model //
-show() {
-  fill(255, 0, 0);
-  rect(offsetX + this.x * tileSize, offsetY + this.y * tileSize, tileSize, tileSize);
-}
 
 
-  chase(player) {
-    if (this.moveCooldown > 0) {
-      this.moveCooldown--;
-      return; 
+  show() {
+    fill(255, 0, 0);
+    rect(offsetX + this.x * tileSize, offsetY + this.y * tileSize, tileSize, tileSize);
+  }
+
+chase(player) {
+  if (this.moveCooldown > 0) {
+    this.moveCooldown--;
+    return;
+  }
+
+  this.moveCooldown = this.moveCooldownMax; // faster or normal
+
+  // distance to player
+  let dx = player.x - this.x;
+  let dy = player.y - this.y;
+  let distance = sqrt(dx * dx + dy * dy);
+
+  if (this.alwaysChase || distance <= this.lockOnDistance) {
+    // horizontal priority or vertical priority
+    if (abs(dx) > abs(dy)) {
+      if (dx > 0 && maze[this.y][this.x + 1] === 0) this.x++;
+      else if (dx < 0 && maze[this.y][this.x - 1] === 0) this.x--;
+      else if (dy > 0 && maze[this.y + 1][this.x] === 0) this.y++;
+      else if (dy < 0 && maze[this.y - 1][this.x] === 0) this.y--;
+    } else {
+      if (dy > 0 && maze[this.y + 1][this.x] === 0) this.y++;
+      else if (dy < 0 && maze[this.y - 1][this.x] === 0) this.y--;
+      else if (dx > 0 && maze[this.y][this.x + 1] === 0) this.x++;
+      else if (dx < 0 && maze[this.y][this.x - 1] === 0) this.x--;
     }
+  } else {
+    // random movement
+    let moves = [];
+    if (maze[this.y][this.x + 1] === 0) moves.push([1, 0]);
+    if (maze[this.y][this.x - 1] === 0) moves.push([-1, 0]);
+    if (maze[this.y + 1] && maze[this.y + 1][this.x] === 0) moves.push([0, 1]);
+    if (maze[this.y - 1] && maze[this.y - 1][this.x] === 0) moves.push([0, -1]);
 
-    this.moveCooldown = 20; // Move once every X frames
-
-    // Calculate distance to player
-    let dx = player.x - this.x;
-    let dy = player.y - this.y;
-    let distance = sqrt(dx * dx + dy * dy);
-
-    // Decide behavior based on distance
-    if (distance <= this.lockOnDistance) {
-      // If player is close, chase
-      if (dx * dx > dy * dy) {
-        if (dx > 0 && maze[this.y][this.x + 1] === 0) this.x++;
-        else if (dx < 0 && maze[this.y][this.x - 1] === 0) this.x--;
-        else if (dy > 0 && maze[this.y + 1][this.x] === 0) this.y++;
-        else if (dy < 0 && maze[this.y - 1][this.x] === 0) this.y--;
-      } else {
-        if (dy > 0 && maze[this.y + 1][this.x] === 0) this.y++;
-        else if (dy < 0 && maze[this.y - 1][this.x] === 0) this.y--;
-        else if (dx > 0 && maze[this.y][this.x + 1] === 0) this.x++;
-        else if (dx < 0 && maze[this.y][this.x - 1] === 0) this.x--;
-      }
-    } 
-
-    // If player is far, move randomly
-    else {
-      let moves = [];
-      if (maze[this.y][this.x + 1] === 0) moves.push([1, 0]);
-      if (maze[this.y][this.x - 1] === 0) moves.push([-1, 0]);
-      if (maze[this.y + 1] && maze[this.y + 1][this.x] === 0) moves.push([0, 1]);
-      if (maze[this.y - 1] && maze[this.y - 1][this.x] === 0) moves.push([0, -1]);
-
-      if (moves.length > 0) {
-        let move = moves[floor(random(moves.length))];
-        this.x += move[0];
-        this.y += move[1];
-      }
+    if (moves.length > 0) {
+      let move = moves[floor(random(moves.length))];
+      this.x += move[0];
+      this.y += move[1];
     }
   }
 }
-
-
+}

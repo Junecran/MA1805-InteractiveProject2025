@@ -7,6 +7,9 @@
 - could have probably coding a randomise maze but happy acciendent that it could respresent that after learning the bad online you can be safter = faster at solving the maze
 - could have found an easier way to get the map done without doing it by hand
 - wanted faster/smoother movement but couldnt figure it out as coding has betrayed me 
+- movement sliding was cool but couldnt figure out a turning title system
+- find more about pathfinding systems 
+- gonna do an png background for the menu but liked the resized thing too much
 
 ## References Used
 
