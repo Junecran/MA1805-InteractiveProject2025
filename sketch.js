@@ -12,7 +12,7 @@ let keys = {};
 let menuImg;
 
 function preload() {
-  menuImg = loadImage("assets/Safey_Search_Menu.png");
+  menuImg = loadImage("assets/SafetySearchMenu.png");
 }
 
 // Maze
@@ -142,10 +142,23 @@ function drawMaze() {
 
 // ----------------- MENU -----------------
 function gameMenu() {
-  image(menuImg, 0, 0, width, height);
+  background(255); // optional, in case your image doesn't cover full area
+
+  // Calculate scale to fit image inside canvas
+  let scaleX = width / menuImg.width;
+  let scaleY = height / menuImg.height;
+  let scale = min(scaleX, scaleY);
+
+  let imgW = menuImg.width * scale;
+  let imgH = menuImg.height * scale;
+
+  let imgX = (width - imgW) / 2;
+  let imgY = (height - imgH) / 2;
+
+  image(menuImg, imgX, imgY, imgW, imgH);
+
   drawResetButton();
 }
-
 function drawResetButton() {
   let w = width * 0.18;
   let h = height * 0.05;
@@ -175,9 +188,21 @@ function mousePressed() {
 // ----------------- INPUT -----------------
 function keyPressed() {
   keys[key] = true;
+
   if (keyCode === 32) { // SPACE
-    if (showMenu) gameEnded = false;
-    showMenu = !showMenu;
+    // SPACE toggles menu but only if the game is not over
+    if (!gameEnded) showMenu = !showMenu;
+  }
+
+  if (keyCode === 13) { // ENTER
+    if (showMenu) {
+      // Start game from menu
+      showMenu = false;
+      gameEnded = false;
+    } else {
+      // Reopen menu while playing
+      showMenu = true;
+    }
   }
 }
 function keyReleased() { keys[key] = false; }
