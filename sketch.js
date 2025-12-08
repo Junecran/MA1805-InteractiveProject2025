@@ -1,30 +1,48 @@
+
+   // Preload //  
+
+function preload() {
+  mainMenuImg = loadImage("Assets/SafetySearchMenu.png");
+  infoMenu = loadImage("Assets/SSMHowToPlay.png"); 
+  robotoFont = loadFont("Assets/RobotoMedium.ttf");
+}
+
+   // -- Data -- //  
 let player;
 let enemies = [];
-let showMenu = true;
+let showMainMenu = true;
 let offsetX = 0;
 let offsetY = 0;
 let overlayMessage = "";
 let showTemporaryMessage = false;
 let messageTimer = 0;
 let messageDelay = 20;
-let gameEnded = false;
+let gameEndEvent= false;
 let keys = {};
-let menuImg;
-let myFont;
-let menuImgX = 0;
-let menuImgY = 0;
-let menuImgW = 600;  // default fixed size
-let menuImgH = 600;
-let showSecondScreen = false;
-let secondImg;
+let mainMenuImg;
+let robotoFont;
+let showInfoMenu = false;
+let infoMenu;
+let tileSize, cols, rows;
 
-function preload() {
-  menuImg = loadImage("Assets/SafetySearchMenu.png");
-  secondImg = loadImage("Assets/SSMHowToPlay.png"); 
-  myFont = loadFont("Assets/RobotoMedium.ttf");
-}
+let restButtonPos = {
+ rW: 0.15, 
+ rH: 0.05, 
+ rX: 0.315,
+ rY: 0.58
+};
+let infoMenuPos = {
+ imX: 0.37,
+ imY: 0.68
+};
+let backButtonPos = {
+ bW: 0.25,
+ bH: 0.06,
+ bX: -0.05,
+ bY: 0.22
+};
 
-// Maze
+// Maze //
 let maze = [
 [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
 [1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
@@ -60,7 +78,7 @@ let maze = [
 [1,0,1,0,1,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,1,0,0,0,0,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
 [1,0,1,0,1,0,1,0,1,1,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,1,1,1,1,1,1,1,0,0,0,0,1,1,1,1,1,1,1,0,1,0,1,0,1,0,1,1,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
 [1,0,1,0,1,0,1,0,1,0,1,0,0,0,0,0,1,0,1,0,1,0,1,0,0,0,1,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,1,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
-[1,0,1,0,1,0,1,0,1,0,1,0,1,1,1,0,1,0,1,0,1,0,1,0,0,0,1,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
+[1,0,1,0,1,0,1,0,1,0,1,0,1,1,1,0,1,0,1,0,1,0,1,0,0,0,1,0,1,0,1,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
 [1,0,0,0,1,0,1,0,1,0,1,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
 [1,0,1,1,1,0,1,0,1,0,1,0,1,1,1,1,1,0,1,0,1,0,1,0,1,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
 [1,0,1,0,1,0,1,0,1,0,1,0,0,0,0,0,1,0,1,0,1,0,1,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
@@ -112,17 +130,36 @@ let maze = [
 
 
 
-let tileSize, cols, rows;
 
+
+
+   // -- Setup & Menus Settings -- //
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  frameRate(30);
+
+// Main Menu Image Settings //
+   mainMenu = {
+    img: mainMenuImg,
+    width: 750, // Size 
+    height: 600,
+    x: (width - 750) / 2, // Dynamic placement
+    y: (height - 600) / 2
+   };
+
+// Information Menu Settings //
+   infoMenu = {
+    img: infoMenu,
+    width: 950, // Size 
+    height: 600,
+    x: (width - 950) / 2, // Dynamic placement
+    y: (height - 600) / 2
+   };
 
   cols = maze[0].length;
   rows = maze.length;
   tileSize = floor(min(width / cols, height / rows));
-  updateOffsets();
 
+  updateOffsets();
   resetGame();
 }
 
@@ -137,42 +174,50 @@ function windowResized() {
   updateOffsets();
 }
 
-function drawSecondScreen() {
-  background(255);
 
-  let imgW = 950;
-  let imgH = 600;
+//  MENU
 
-  let imgX = (width - imgW) / 2;
-  let imgY = (height - imgH) / 5;
+function drawResetButton() {
 
-  image(secondImg, imgX, imgY, imgW, imgH);
+  let w = mainMenu.width * restButtonPos.rW;   
+  let h = mainMenu.height* restButtonPos.rH;  
+  let x = mainMenu.x + mainMenu.width * restButtonPos.rX;
+  let y = mainMenu.y + mainMenu.height * restButtonPos.rY;
 
-  drawBackButton(imgX, imgY, imgW, imgH);
+  fill(gameStartEvent() ? [248, 249, 250] : [208, 209, 210]);
+  noStroke();
+  rect(x, y, w, h, 10);
+
+  fill(70);
+  textAlign(CENTER, CENTER);
+  textSize(h * 0.44);
+  textFont(robotoFont);
+
+  text("Game Reset", x + w / 2, y + h / 2.2);
 }
 
-function drawBackButton(imgX, imgY, imgW, imgH) {
-  let w = imgW * 0.25;
-  let h = imgH * 0.06;
+function drawBackButton() {
+  let w = infoMenu.width * 0.25;
+  let h = infoMenu.height* 0.06;
 
   // Button position near bottom center of second image
-  let x = imgX + imgW * -0.05;
-  let y = imgY + imgH * 0.22;
+  let x = infoMenu.x + infoMenu.width * -0.05;
+  let y = infoMenu.y + infoMenu.height * 0.22;
 
  
   fill(70);
   textAlign(CENTER, CENTER);
   textSize(h * 0.44);
-  textFont(myFont);
+  textFont(robotoFont);
   text("Back to Main Menu", x + w / 2, y + h / 2.2);
 }
 
 function drawSecondButton() {
-  let w = menuImgW * 0.25;
-  let h = menuImgH * 0.06;
+  let w = mainMenu.width * 0.25;
+  let h = mainMenu.height * 0.06;
 
-  let x = menuImgX + menuImgW * 0.37;
-  let y = menuImgY + menuImgH * 0.68; // above reset button
+  let x = mainMenu.x + mainMenu.width * 0.37;
+  let y = mainMenu.y + mainMenu.height * 0.68;// above reset button
 
   fill(230);
   rect(x, y, w, h, 10);
@@ -180,7 +225,7 @@ function drawSecondButton() {
   fill(70);
   textAlign(CENTER, CENTER);
   textSize(h * 0.44);
-  textFont(myFont);
+  textFont(robotoFont);
   text("Next Page", x + w / 2, y + h / 2.2);
 }
 
@@ -188,7 +233,7 @@ function drawSecondButton() {
 function draw() {
   background(233, 236, 240);
 
-  if (!showMenu) player.update();
+  if (!showMainMenu) player.update();
 
   if (showTemporaryMessage) {
     drawMaze();
@@ -205,7 +250,7 @@ function draw() {
     messageTimer--;
     if (messageTimer <= 0) {
       showTemporaryMessage = false;
-      showMenu = true;
+      showMainMenu = true;
     }
     return;
   }
@@ -214,13 +259,13 @@ function draw() {
   drawMaze();
   player.show();
   enemies.forEach(e => {
-    if (!showMenu) e.chase(player);
+    if (!showMainMenu) e.chase(player);
     e.show();
   });
 
   // Win condition
-  if (!gameEnded && maze[player.y][player.x] === 3) {
-    gameEnded = true;
+  if (!gameEndEvent&& maze[player.y][player.x] === 3) {
+    gameEndEvent= true;
     overlayMessage = "You Win!";
     showTemporaryMessage = true;
     messageTimer = messageDelay;
@@ -228,19 +273,25 @@ function draw() {
 
   // Lose condition
   enemies.forEach(e => {
-    if (!gameEnded && e.x === player.x && e.y === player.y) {
-      gameEnded = true;
+    if (!gameEndEvent&& e.x === player.x && e.y === player.y) {
+      gameEndEvent= true;
       overlayMessage = "Game Over!";
       showTemporaryMessage = true;
       messageTimer = messageDelay;
     }
   });
 
-  if (showMenu) {
-  if (showSecondScreen) {
-    drawSecondScreen();
+  // Menu Drawing //
+  if (showMainMenu) {
+  if (showInfoMenu) {
+   background(255);
+   image(infoMenu.img, infoMenu.x, infoMenu.y, infoMenu.width, infoMenu.height);
+   drawBackButton(infoMenu.img, infoMenu.x, infoMenu.y, infoMenu.width, infoMenu.height);
   } else {
-    gameMenu();
+   background(255);
+   image(mainMenu.img, mainMenu.x, mainMenu.y, mainMenu.width, mainMenu.height);
+   drawResetButton();
+   drawSecondButton();
   }
   return;
 }
@@ -266,54 +317,45 @@ function drawMaze() {
     }
   }
 }
-//  MENU
-function gameMenu() {
-  background(255);
 
-  // Fixed menu image size (edit these to any size you want)
-  menuImgW = 750;
-  menuImgH = 600;
 
-  // Center it
-  menuImgX = (width - menuImgW) / 2;
-  menuImgY = (height - menuImgH) / 2;
-
-  // Draw image
-  image(menuImg, menuImgX, menuImgY, menuImgW, menuImgH);
-
-  drawResetButton();
-  drawSecondButton();
+// ----------------- RESET -----------------
+function resetGame() {
+  player = new Player(39, 41);
+  enemies = [
+    new Enemy(9, 9),
+    new Enemy(75, 75),
+    new Enemy(9, 75),
+    new Enemy(75, 9),
+    new Enemy(60, 30),
+    new Enemy(30, 60),
+    new Enemy(12, 5, true)
+  ];
+  gameEndEvent= false;
+  showMainMenu = true;
+  showTemporaryMessage = false;
+  overlayMessage = "";
 }
 
-function drawResetButton() {
-  // Button size relative to image
-  let w = menuImgW * 0.15;   // 25% of image width
-  let h = menuImgH * 0.05;   // 6% of image height
-
-  // Position relative to the bottom-middle of the image
-  let x = menuImgX + menuImgW * 0.315;
-  let y = menuImgY + menuImgH * 0.58;
-
-  fill(isGameAtOrigin() ? [248, 249, 250] : [208, 209, 210]);
-  noStroke();
-  rect(x, y, w, h, 10);
-
-  fill(70);
-  textAlign(CENTER, CENTER);
-  textSize(h * 0.44);
-  textFont(myFont);
-
-  text("Game Reset", x + w / 2, y + h / 2.2);
+// ----------------- GAME LOGIC -----------------
+function gameStartEvent() {
+  let startEnemies = [[9,9],[75,75],[9,75],[75,9],[60, 30],[30, 60],[12,5]];
+  if (player.x !== 39 || player.y !== 41) return false;
+  for (let i=0;i<enemies.length;i++) {
+    if (enemies[i].x !== startEnemies[i][0] || enemies[i].y !== startEnemies[i][1]) return false;
+  }
+  return true;
 }
 
+ // -- Inputs -- //
 function mousePressed() {
-  if (showMenu && !showSecondScreen) {
+  if (showMainMenu && !showInfoMenu) {
 
-    // reset button
-    let w1 = menuImgW * 0.25;
-    let h1 = menuImgH * 0.06;
-    let x1 = menuImgX + menuImgW * 0.37;
-    let y1 = menuImgY + menuImgH * 0.76;
+  // Reset Menu Button //
+    let w1 = mainMenu.width * restButtonPos.rW; 
+    let h1 = mainMenu.height * restButtonPos.rH;
+    let x1 = mainMenu.x + mainMenu.width  * restButtonPos.rX;
+    let y1 = mainMenu.y + mainMenu.height * restButtonPos.rY;
 
     if (mouseX >= x1 && mouseX <= x1 + w1 &&
         mouseY >= y1 && mouseY <= y1 + h1) {
@@ -321,164 +363,170 @@ function mousePressed() {
       return;
     }
 
-    
-    // next page button
+  // Information Menu Button //
     let w2 = w1;
     let h2 = h1;
-    let x2 = menuImgX + menuImgW * 0.37;
-    let y2 = menuImgY + menuImgH * 0.68;
+    let x2 = mainMenu.x + mainMenu.width  * infoMenuPos.imX;
+    let y2 = mainMenu.y + mainMenu.height * infoMenuPos.imY;
 
     if (mouseX >= x2 && mouseX <= x2 + w2 &&
         mouseY >= y2 && mouseY <= y2 + h2) {
-      showSecondScreen = true;
+      showInfoMenu = true;
       return;
     }
   }
 
-  // ---------- SECOND SCREEN: BACK BUTTON ----------
-  if (showSecondScreen) {
+  // Back to Main Menu Button //
+    if (showInfoMenu) {
 
-    let bw = menuImgW * 0.25;
-    let bh = menuImgH * 0.06;
+    let w3 = mainMenu.width * backButtonPos.bW;
+    let h3 = mainMenu.height * backButtonPos.bH;
+    let x3 = mainMenu.x + mainMenu.width  * backButtonPos.bX;
+    let y3 = mainMenu.y + mainMenu.height * backButtonPos.bY;
 
-    let bx = menuImgX + menuImgW * -0.05;
-    let by = menuImgY + menuImgH * 0.22;
-
-    if (mouseX >= bx && mouseX <= bx + bw &&
-        mouseY >= by && mouseY <= by + bh) {
-      showSecondScreen = false;
+    if (mouseX >= x3 && mouseX <= x3 + w3 &&
+        mouseY >= y3 && mouseY <= y3 + h3) {
+      showInfoMenu = false;
       return;
     }
   }
 }
 
-// ----------------- INPUT -----------------
+// Game Controls //
 function keyPressed() {
   keys[key] = true;
 
-  if (keyCode === 32) { // SPACE
-    // SPACE toggles menu but only if the game is not over
-    if (!gameEnded) showMenu = !showMenu;
-  }
-
   if (keyCode === 13) { // ENTER
-    if (showMenu) {
-      // Start game from menu
-      showMenu = false;
-      gameEnded = false;
+    if (showMainMenu) {
+      showMainMenu = false;
+      gameEndEvent= false;
     } else {
-      // Reopen menu while playing
-      showMenu = true;
+      showMainMenu = true;
     }
   }
 }
-function keyReleased() { keys[key] = false; }
-
-// ----------------- RESET -----------------
-function resetGame() {
-  player = new Player(10, 28);
-  enemies = [
-    new Enemy(8, 1),
-    new Enemy(7, 9),
-    new Enemy(12, 5, true)
-  ];
-  gameEnded = false;
-  showMenu = true;
-  showTemporaryMessage = false;
-  overlayMessage = "";
+function keyReleased() { keys[key] = false;
 }
+ 
 
-// ----------------- GAME LOGIC -----------------
-function isGameAtOrigin() {
-  if (player.x !== 10 || player.y !== 28) return false;
-  let startEnemies = [[8,1],[7,9],[12,5]];
-  for (let i=0;i<enemies.length;i++) {
-    if (enemies[i].x !== startEnemies[i][0] || enemies[i].y !== startEnemies[i][1]) return false;
-  }
-  return true;
-}
-
-// ----------------- PLAYER -----------------
+  // --- Player --- //
 class Player {
-  constructor(x, y) {
-    this.x = x; this.y = y;
+   constructor(x, y) {
+    this.x = x;
+    this.y = y;
     this.moveCooldown = 0;
   }
 
+ // Player's Model //
   show() {
-    fill(255, 255, 0);
+    fill(0);
     ellipse(offsetX + this.x*tileSize + tileSize/2,
             offsetY + this.y*tileSize + tileSize/2,
             tileSize*0.8);
   }
 
+ // Movement Settings //
   update() {
     if (this.moveCooldown>0){ this.moveCooldown--; return; }
-    this.moveCooldown=5;
+    this.moveCooldown=5; // Movement speed
 
-    if (keys['ArrowLeft']||keys['a']||keys['A']) this.tryMove(-1,0);
-    if (keys['ArrowRight']||keys['d']||keys['D']) this.tryMove(1,0);
-    if (keys['ArrowUp']||keys['w']||keys['W']) this.tryMove(0,-1);
-    if (keys['ArrowDown']||keys['s']||keys['S']) this.tryMove(0,1);
+// Controls
+    if (keys['ArrowLeft'] || keys['a'] || keys['A']) {this.tryMove(-1, 0);}
+    if (keys['ArrowRight'] || keys['d'] || keys['D']) {this.tryMove(1, 0);}
+    if (keys['ArrowUp'] || keys['w'] || keys['W']) {this.tryMove(0, -1);}
+    if (keys['ArrowDown'] || keys['s'] || keys['S']) {this.tryMove(0, 1);}
   }
-
+  
+// Collision
   tryMove(dx,dy){
-    let nx = this.x+dx, ny=this.y+dy;
-    if (maze[ny] && (maze[ny][nx]===0||maze[ny][nx]===3)){
-      this.x=nx; this.y=ny;
+    let nx = this.x + dx;
+    let ny = this.y + dy;
+
+    if (maze[ny] && (maze[ny][nx] === 0 || maze[ny][nx] === 3)) {
+      this.x = nx;
+      this.y = ny;
     }
   }
 }
 
 // ----------------- ENEMY -----------------
 class Enemy {
-  constructor(x, y, alwaysChase=false){
-    this.x=x; this.y=y; this.alwaysChase=alwaysChase;
-    this.moveCooldownMax = alwaysChase ? 4 : 10;
-    this.moveCooldown = 0;
-    this.lockOnDistance = 5;
+  constructor(x, y, alwaysChase=false, path=null){
+    this.x = x;
+    this.y = y;
+    this.alwaysChase = alwaysChase;
+    this.moveCooldownMax = alwaysChase ? 5 : 10;
+    this.moveCooldown = 5;
+
+    // Patrol path for pattern movement
+    this.path = path; 
+    this.pathIndex = 0;
+    this.pathForward = true; // To loop back and forth along the path
   }
 
   show() {
-    fill(255,0,0);
-    rect(offsetX+this.x*tileSize, offsetY+this.y*tileSize, tileSize, tileSize);
+    fill(this.alwaysChase ? 'red' : 'blue');
+    rect(offsetX + this.x * tileSize, offsetY + this.y * tileSize, tileSize, tileSize);
   }
 
   chase(player){
-    if (this.moveCooldown>0){ this.moveCooldown--; return; }
-    this.moveCooldown=this.moveCooldownMax;
+    if (this.moveCooldown > 0){ 
+      this.moveCooldown--; 
+      return; 
+    }
+    this.moveCooldown = this.moveCooldownMax;
 
-    let dx = player.x - this.x;
-    let dy = player.y - this.y;
-    let distance = sqrt(dx*dx + dy*dy);
+    if (this.alwaysChase) {
+      // True chaser always moves toward the player
+      this.moveTowards(player.x, player.y);
+    } else if (this.path) {
+      // Follow patrol path
+      let target = this.path[this.pathIndex];
+      if (this.x === target[0] && this.y === target[1]) {
+        if (this.pathForward) this.pathIndex++;
+        else this.pathIndex--;
 
-    if (this.alwaysChase || distance<=this.lockOnDistance) {
-      let moved=false;
-      if (abs(dx)>abs(dy)) {
-        if (dx>0 && maze[this.y][this.x+1]===0){ this.x++; moved=true; }
-        else if (dx<0 && maze[this.y][this.x-1]===0){ this.x--; moved=true; }
-        if (!moved){
-          if (dy>0 && maze[this.y+1] && maze[this.y+1][this.x]===0) this.y++;
-          else if (dy<0 && maze[this.y-1] && maze[this.y-1][this.x]===0) this.y--;
+        if (this.pathIndex >= this.path.length) { 
+          this.pathIndex = this.path.length - 2; 
+          this.pathForward = false; 
         }
-      } else {
-        if (dy>0 && maze[this.y+1] && maze[this.y+1][this.x]===0){ this.y++; moved=true; }
-        else if (dy<0 && maze[this.y-1] && maze[this.y-1][this.x]===0){ this.y--; moved=true; }
-        if (!moved){
-          if (dx>0 && maze[this.y][this.x+1]===0) this.x++;
-          else if (dx<0 && maze[this.y][this.x-1]===0) this.x--;
+        if (this.pathIndex < 0) { 
+          this.pathIndex = 1; 
+          this.pathForward = true; 
         }
+        target = this.path[this.pathIndex];
       }
+      this.moveTowards(target[0], target[1]);
     } else {
-      let moves=[];
-      if (maze[this.y][this.x+1]===0) moves.push([1,0]);
-      if (maze[this.y][this.x-1]===0) moves.push([-1,0]);
-      if (maze[this.y+1] && maze[this.y+1][this.x]===0) moves.push([0,1]);
-      if (maze[this.y-1] && maze[this.y-1][this.x]===0) moves.push([0,-1]);
-      if (moves.length>0){
-        let m = moves[floor(random(moves.length))];
-        this.x+=m[0]; this.y+=m[1];
-      }
+      // Default random movement
+      this.randomMove();
+    }
+  }
+
+  moveTowards(tx, ty){
+    let dx = tx - this.x;
+    let dy = ty - this.y;
+    let moved = false;
+
+    if (abs(dx) > abs(dy)){
+      if (dx > 0 && maze[this.y][this.x + 1] === 0) { this.x++; moved = true; }
+      else if (dx < 0 && maze[this.y][this.x - 1] === 0) { this.x--; moved = true; }
+    }
+    if (!moved){
+      if (dy > 0 && maze[this.y + 1] && maze[this.y + 1][this.x] === 0) this.y++;
+      else if (dy < 0 && maze[this.y - 1] && maze[this.y - 1][this.x] === 0) this.y--;
+    }
+  }
+
+  randomMove(){
+    let moves = [];
+    if (maze[this.y][this.x + 1] === 0) moves.push([1,0]);
+    if (maze[this.y][this.x - 1] === 0) moves.push([-1,0]);
+    if (maze[this.y + 1] && maze[this.y + 1][this.x] === 0) moves.push([0,1]);
+    if (maze[this.y - 1] && maze[this.y - 1][this.x] === 0) moves.push([0,-1]);
+    if (moves.length > 0){
+      let m = moves[floor(random(moves.length))];
+      this.x += m[0]; this.y += m[1];
     }
   }
 }
