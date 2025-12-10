@@ -1,6 +1,6 @@
 # MA1805-FinalProject
 [game](https://junecran.github.io/MA1805-InteractiveProject2025/SafetySearchGame/index.html)
-
+w
 work
 **Design Choices**
 
