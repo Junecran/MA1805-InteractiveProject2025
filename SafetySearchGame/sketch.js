@@ -356,7 +356,7 @@ let y5 = mainMenu.y + mainMenu.height * readmeButtonPos.rmY;
 
 if (mouseX >= x5 && mouseX <= x5 + w5 &&
     mouseY >= y5 && mouseY <= y5 + h5) {
-  window.open("https://junecran.github.io/MA1805-InteractiveProject2025/README.md"); 
+  window.open("https://junecran.github.io/MA1805-InteractiveProject2025/README"); 
   return;
 }
 }
