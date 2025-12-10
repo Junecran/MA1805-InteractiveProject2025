@@ -131,10 +131,10 @@ let maze = [
 
 // Preload //  
 function preload() {
-  mainMenuImg = loadImage("SafetySearchMenu.png");
-  infoMenuImg = loadImage("SSMHowToPlay.png"); 
-  popUpImg = loadImage("SSMPopUp.png"); 
-  robotoFont = loadFont("RobotoMedium.ttf");
+  mainMenuImg = loadImage("assets/SafetySearchMenu.png");
+  infoMenuImg = loadImage("assets/SSMHowToPlay.png"); 
+  popUpImg = loadImage("assets/SSMPopUp.png"); 
+  robotoFont = loadFont("assets/RobotoMedium.ttf");
 }
 
 
@@ -356,7 +356,7 @@ let y5 = mainMenu.y + mainMenu.height * readmeButtonPos.rmY;
 
 if (mouseX >= x5 && mouseX <= x5 + w5 &&
     mouseY >= y5 && mouseY <= y5 + h5) {
-  window.open("https://junecran.github.io/MA1805-FinalProject/"); 
+  window.open("https://junecran.github.io/MA1805-InteractiveProject2025/"); 
   return;
 }
 }
