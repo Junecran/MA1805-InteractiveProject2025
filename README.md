@@ -1,5 +1,7 @@
 # MA1805-FinalProject
-https://junecran.github.io/MA1805-InteractiveProject2025/SafetySearchGame/index.html
+
+https://junecran.github.io/MA1805-InteractiveProject2025/
+
 **Design Choices**
 
 ## Debrief
