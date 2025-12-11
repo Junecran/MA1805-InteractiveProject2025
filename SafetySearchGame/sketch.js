@@ -258,7 +258,7 @@ function drawInfoMenu() {
   textAlign(CENTER, CENTER);
   textSize(h * 0.5);
   textFont(robotoFont);
-  text("How to Play?", x + w / 6, y + h / 2.2);
+  text("How to Play?", x + w / 6.4, y + h / 2.2);
 }
 
 // Back to Menu Button  //
