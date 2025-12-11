@@ -18,7 +18,7 @@ Time constraints limited the scope of this project, so I prioritised establishin
 
 - Randomly generating the maze could have improved the game's replayability. However, I view this as a positive outcome: once players learn the optimal solution, the game can symbolise how people become more adept at avoiding online dangers through experience.
 
-- Creating the maze was a nightmare as it was hard to see the briary code as walls and paths. After the first couple of maze drafts, I made a ‘Maze Maker code’ heavily inspired by code from digital pixel painting apps. (More of the ‘Maze Maker Code’ below)
+- Creating the maze was a nightmare as it was hard to see the briary code as walls and paths. After the first couple of maze drafts, I made a ‘Maze Maker Tool’ heavily inspired by code from digital pixel painting apps. (More of the ‘Maze Maker Code’ below)
 
 - Player movement posed a significant challenge, as the initial methods resulted in choppy motion. I found it undesirable to repeatedly press keys, so I implemented a 'holding the button down' approach. However, this adjustment made navigation through the maze's openings feel awkward. I intend to improve this aspect in future iterations.
 
