@@ -10,7 +10,7 @@ As the internet becomes more integrated into daily life, educating users about o
 
 - I designed the game with a modern, clean aesthetic to reinforce its connection to the online world. The user interface, colour palette, and fonts draw inspiration from contemporary search engines such as Google. The maze style is primarily influenced by the 'dinosaur no wifi game.'
 
-- While the Dinosaur game uses mainly shades of grey, I incorporated bolder colours to help players distinguish between different characters and features.
+- While the 'Dinosaur game' uses mainly shades of grey, I incorporated bolder colours to help players distinguish between different characters and features.
 
 - I kept the player and enemy models simple due to the maze's size and complexity, so as not to distract from the goal. 
 
@@ -44,14 +44,44 @@ Each cell is drawn as a square: black for walls and white for open spaces. This 
 The interactivity comes from the mousePressed() function. Clicking on any cell toggles it between wall and path, allowing rapid building or editing without typing. The code also includes a save feature: pressing S exports the maze as a text file, with each row converted to comma-separated values. This makes it easy to transfer the maze to other programs or reuse it later. Overall, the system was very helpful for quick maze creation.
 
 
-## References Used
+## References and Study Note
+- The 'Dino Game' i referenced in the README - https://trex-runner.com
+
+**Enemy Path Following**
+Forward → Reverse → Forward → Reverse … stops Go forward through the array → when you reach the end, instantly teleport back to the start.
+- The 'PingPong' Math for smooth pathing https://docs.unity3d.com/ScriptReference/Mathf.PingPong.html
+- Ai Pathfinding https://theory.stanford.edu/~amitp/GameProgramming/
+
+**Enemy Chasing Logic**
+Move toward the strongest direction first (horizontal vs vertical). Creates the classic "chase" behavior — simple but effective.
+-https://gameinternals.com/understanding-pac-man-ghost-behavior
+
+if (Math.abs(dx) > Math.abs(dy)) {
+  // Try horizontal movement first
+}
+
+**SetTimeout** No notes needed pretty simple to use but very glad i used it.
+
+**Game Reset System**
+checks whether: the player is at the original spawn /the enemy list matches the original spawn list
+If all match → the game is at its pure restart state.
+-https://gameprogrammingpatterns.com/state.html
+
+let startEnemies = [[9,9],[75,75],[9,75],[75,9],[60,30],[30,60],[37,20],[50,60],[20,40],[46,24],[40,55]];
+
+if (player.x !== 39 || player.y !== 41) return false;
+
+for (let i=0; i<enemies.length; i++) {
+  if (enemies[i].x !== startEnemies[i][0] ||
+      enemies[i].y !== startEnemies[i][1]) 
+    return false;
+}
+return true;
+
+### Maze Maker Tool References
 - Savestrings -  https://p5js.org/reference/p5/saveStrings
 - Drawing/ grid - https://gist.github.com/johnfredcee/81b09011a88c99b84e3a5f870ae46d5a
 - Mouse controls - https://p5js.org/reference/p5/mousePressed
 
 
 
-   Solve the maze to reach the green tile to win. However, beware of viruses and hackers that will hunt you down; touching them will cause a game over. Trap tiles will randomly appear to slow your progress. 
-
-## Study Notes 
- I Didnt Transfer the Notes from word this time to keep the README Shorter but if would have improved my grade let me know and next time i continue to add them.
