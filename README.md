@@ -35,10 +35,13 @@ Time constraints limited the scope of this project, so I prioritised establishin
 - Finally, I wish I had more time to develop the game's features. I intended the 'pop-ups' to appear more intrusive and randomised. I also wanted to experiment with the user interface style and create a more visually appealing maze and gameplay using modern UI menus, possibly combined with arcade game styles.
 
 
-
-
-# [Maze Maker](MazeMakerCode/index.html) - Extra Code
+# [Maze Maker Tool](MazeMakerCode/index.html) - Extra Code
 **Quick Description**
+This code provides a fast and interactive way to create custom mazes by turning a simple grid into an editable map. By representing the maze as a 2D array where each cell is either a wall (1) or a path (0), the program allows users to visually design maze layouts rather than manually edit long arrays of numbers. 
+
+Each cell is drawn as a square: black for walls and white for open spaces. This visual feedback lets users instantly see how their maze looks and make adjustments on the fly.
+
+The interactivity comes from the mousePressed() function. Clicking on any cell toggles it between wall and path, allowing rapid building or editing without typing. The code also includes a save feature: pressing S exports the maze as a text file, with each row converted to comma-separated values. This makes it easy to transfer the maze to other programs or reuse it later. Overall, the system was very helpful for quick maze creation.
 
 
 ## References Used
