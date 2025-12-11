@@ -169,10 +169,10 @@ function setup() {
    // Guides Settings //
   guides = {
    img: guidesImg,
-   width: 1100, // Size
-   height: 1400,
-   x: (width - 1100) / 1.7 , // Placement
-   y: (height - 1400) / 2 + 270 
+   width: 800, // Size
+   height: 1000,
+   x: (width - 800) / 2 , // Placement
+   y: (height - 1000) /2 + 100
   };
 
 
@@ -433,7 +433,7 @@ if (showInfoMenu) {
   // Information Menu 
   background(255);
   image(infoMenu.img, infoMenu.x, infoMenu.y, infoMenu.width, infoMenu.height);
-  image(guides.img, guides.x, guides.y, guides.width * 0.8, guides.height * 0.8);
+  image(guides.img, guides.x, guides.y, guides.width , guides.height );
   drawBackButton();
   // Main Menu
   } else if (showMainMenu) {
