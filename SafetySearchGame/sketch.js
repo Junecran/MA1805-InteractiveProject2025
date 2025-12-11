@@ -22,15 +22,15 @@ let showPopUp = false;
 let showInfoMenu = false;
 let restButtonPos = {
  rW: 0.15, 
- rH: 0.05, 
- rX: 0.315,
- rY: 0.58
+ rH: 0.058, 
+ rX: 0.35,
+ rY: 0.713
 };
 let infoMenuPos = {
- imW: 0.782,
+ imW: 0.7,
  imH: 0.06,
- imX: 0.0955,
- imY: 0.408
+ imX: 0.15,
+ imY: 0.625
 };
 let backButtonPos = {
  bW: 0.25,
@@ -142,10 +142,10 @@ function setup() {
   // Main Menu Image Settings //
   mainMenu = {
    img: mainMenuImg,
-   width: 750, // Size 
+   width: 1100, // Size 
    height: 600,
-   x: (width - 750) / 2, // Placement
-   y: (height - 600) / 2
+   x: (width - 1100) / 2, // Placement
+   y: (height - 700) / 4
    };
 
   // Information Menu Settings //
@@ -218,7 +218,7 @@ function drawResetButton() {
   // Conditional Appearance 
   fill(gameStartEvent() ? 250 : [255, 120, 120]); // Main Colour
   noStroke();
-  rect(x, y, w, h, 10);
+  rect(x + 10, y, w- 20, h, 10);
   // Highlight Mouse Target
   let hovering = 
   mouseX >= x && mouseX <= x + w &&
@@ -227,12 +227,12 @@ function drawResetButton() {
    if (hovering) {
     fill(0, 0, 0, 100); // Highlight colour
     noStroke();
-    rect(x, y, w, h, 10);
+    rect(x + 10, y, w- 20, h, 10);
   }
   // Text
   fill(70);
   textAlign(CENTER, CENTER);
-  textSize(h * 0.44);
+  textSize(h * 0.47);
   textFont(robotoFont);
   text("Game Reset", x + w / 2, y + h / 2.2);
 }
@@ -251,12 +251,12 @@ function drawInfoMenu() {
   if (hovering) {
     fill(0, 0, 0, 100); // Highlight colour
     noStroke();
-    rect(x, y, w, h);
+    rect(x + 19, y, w - 35, h);
   }
   // Text
   fill(70);
   textAlign(CENTER, CENTER);
-  textSize(h * 0.44);
+  textSize(h * 0.5);
   textFont(robotoFont);
   text("How to Play?", x + w / 6, y + h / 2.2);
 }
