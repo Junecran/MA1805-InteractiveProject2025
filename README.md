@@ -35,7 +35,7 @@ Time constraints limited the scope of this project, so I prioritised establishin
 
 **There are solution and trap locations Images in the 'SafetySearchGame/assets' if needed**
 
-# [Maze Maker Tool](MazeMakerCode/index.html) - Link to Extra Code
+# [Maze Maker Tool](MazeMakerTool/index.html) - Link to Extra Code
 
 **Quick Description**
 
