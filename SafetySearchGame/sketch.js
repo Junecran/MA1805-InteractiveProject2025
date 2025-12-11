@@ -37,12 +37,7 @@ let backButtonPos = {
  bX: -0.06,
  bY: 0.18
 };
-let readmeButtonPos = {
-  rmW: 0.782,   
-  rmH: 0.06,   
-  rmX: 0.0955,   
-  rmY: 0.47    
-};
+
 // Maze Map //
 let maze = [
 [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
@@ -267,30 +262,6 @@ function drawBackButton() {
   text("Back to Main Menu", x + w / 2, y + h / 2.2);
 }
 
-// README Button //
-function drawReadmeButton() {
-  let w = mainMenu.width * readmeButtonPos.rmW;
-  let h = mainMenu.height * readmeButtonPos.rmH;
-  let x = mainMenu.x + mainMenu.width * readmeButtonPos.rmX;
-  let y = mainMenu.y + mainMenu.height * readmeButtonPos.rmY;
-
-  // Highlight Mouse Target
-  let hovering =
-    mouseX >= x && mouseX <= x + w &&
-    mouseY >= y && mouseY <= y + h;
-
-  if (hovering) {
-    fill(0, 0, 0, 100); // Highlight colour
-    noStroke();
-    rect(x, y, w, h);
-  }
-  // Text
-  fill(70);
-  textAlign(CENTER, CENTER);
-  textSize(h * 0.44);
-  textFont(robotoFont);
-   text("README", x + w / 7, y + h / 2.2);
-}
 
 //  -- Button Inputs --  //
 function mousePressed() {
@@ -346,18 +317,6 @@ function mousePressed() {
     showPopUp = false;
     return;
   }
-}
-
-// README Button //
-let w5 = mainMenu.width * readmeButtonPos.rmW;
-let h5 = mainMenu.height * readmeButtonPos.rmH;
-let x5 = mainMenu.x + mainMenu.width * readmeButtonPos.rmX;
-let y5 = mainMenu.y + mainMenu.height * readmeButtonPos.rmY;
-
-if (mouseX >= x5 && mouseX <= x5 + w5 &&
-    mouseY >= y5 && mouseY <= y5 + h5) {
-  window.open("https://junecran.github.io/MA1805-InteractiveProject2025/README.md"); 
-  return;
 }
 }
 
