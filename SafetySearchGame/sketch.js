@@ -154,7 +154,7 @@ function setup() {
    width: 1100 , // Size 
    height: 800,
    x: (width - 1100) / 2 , // Placement
-   y: (height - 800) / 6
+   y: (height - 800) / 10
    };
 
 // Pop Up Settings //
