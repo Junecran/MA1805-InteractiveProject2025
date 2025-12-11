@@ -15,6 +15,7 @@ let showTemporaryMessage = false;
 let mainMenuImg;
 let infoMenuImg;
 let popUpImg;
+let guidesImg;
 let robotoFont;
 let showMainMenu = true;
 let showPopUp = false;
@@ -129,6 +130,7 @@ function preload() {
   mainMenuImg = loadImage("assets/SafetySearchMenu.png");
   infoMenuImg = loadImage("assets/SSMHowToPlay.png"); 
   popUpImg = loadImage("assets/SSMPopUp.png"); 
+  guidesImg = loadImage("assets/SSMGuides.png");
   robotoFont = loadFont("assets/RobotoMedium.ttf");
 }
 
@@ -155,13 +157,24 @@ function setup() {
    y: (height - 700) / 4
    };
 
-   popUp = {
-    img: popUpImg,
-    width: 900 , // Size 
-    height: 700,
-    x: (width - 900) / 2, // Placement
-    y: (height - 700) / 4
-   };
+// Pop Up Settings //
+  popUp = {
+   img: popUpImg,
+   width: 900 , // Size 
+   height: 700,
+   x: (width - 900) / 2, // Placement
+   y: (height - 700) / 4
+  };
+
+   // Guides Settings //
+  guides = {
+   img: guidesImg,
+   width: 900, // Size
+   height: 700,
+   x: (width - 900) / 2, // Placement
+   y: (height - 700) / 2 + 100 
+  };
+
 
   cols = maze[0].length;
   rows = maze.length;
@@ -180,6 +193,16 @@ function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
   tileSize = floor(min(width / cols, height / rows));
   updateOffsets();
+}
+// Temporary Message Function //
+function showMessage(text, duration = 1500) {
+  overlayMessage = text;
+  showTemporaryMessage = true;
+
+  setTimeout(() => {
+    showTemporaryMessage = false;
+    showMainMenu = true;
+  }, duration);
 }
 
 
@@ -333,7 +356,7 @@ function resetGame() {
     new Enemy(37, 20),
     new Enemy(50, 60),
     new Enemy(20, 40),
-    new Enemy(46, 25, true),
+    new Enemy(46, 24, true),
     new Enemy(40, 55, true)
   ];
   gameEndEvent= false;
@@ -345,7 +368,7 @@ function resetGame() {
 // For the reset function
 function gameStartEvent() {
   // Add the new enemies below [X,Y] otherwise it breaks 
-  let startEnemies = [[9,9],[75,75],[9,75],[75,9],[60, 30],[30, 60],[37, 20],[50, 60],[20, 40],[46, 25],[40, 55]];
+  let startEnemies = [[9,9],[75,75],[9,75],[75,9],[60, 30],[30, 60],[37, 20],[50, 60],[20, 40],[46, 24],[40, 55]];
 
   if (player.x !== 39 || player.y !== 41) return false;
   for (let i=0;i<enemies.length;i++) {
@@ -354,18 +377,9 @@ function gameStartEvent() {
   return true;
 }
 
-// Temporary Game Message Function //
-function showMessage(text, duration = 1500) {
-  overlayMessage = text;
-  showTemporaryMessage = true;
 
-  setTimeout(() => {
-    showTemporaryMessage = false;
-    showMainMenu = true;
-  }, duration);
-}
 
-// -- Game Loop -- // 
+// -- Game Logic -- // 
 function draw() {
   background(233, 236, 240);
 
@@ -374,7 +388,7 @@ function draw() {
    drawMaze();
    player.show();
    enemies.forEach(e => e.show());
-  // Appearance
+  // Message Appearances
    push();
    background(225, 200);
    fill(0);
@@ -385,6 +399,7 @@ function draw() {
    pop();
    return; 
   }
+
   // Gameplay Update //
   if (!showMainMenu) player.update();
    drawMaze();
@@ -393,7 +408,6 @@ function draw() {
    if (!showMainMenu) e.chase(player);
     e.show();
   });
-
   // Win Condition
   if (!gameEndEvent && maze[player.y][player.x] === 3) {
    gameEndEvent = true;
@@ -410,22 +424,23 @@ function draw() {
     setTimeout(resetGame, 1500);
   }
   });
+
   // Menus //
  if (showMainMenu) {
   background(255);
-
-  if (showInfoMenu) {
-    image(infoMenu.img, infoMenu.x, infoMenu.y, infoMenu.width, infoMenu.height);
-    drawBackButton();
-  } else {
-    image(mainMenu.img, mainMenu.x, mainMenu.y, mainMenu.width, mainMenu.height);
-    drawResetButton();
-    drawInfoMenu();
-    drawReadmeButton();   // ← ADD THIS
-  }
-}
-
-  
+if (showInfoMenu) {
+  // Information Menu (highest priority)
+  background(255);
+  image(infoMenu.img, infoMenu.x, infoMenu.y, infoMenu.width, infoMenu.height);
+  image(guides.img, guides.x, guides.y, guides.width * 0.8, guides.height * 0.8);
+  drawBackButton();
+  // Main Menu
+  } else if (showMainMenu) {
+   background(255);
+   image(mainMenu.img, mainMenu.x, mainMenu.y, mainMenu.width, mainMenu.height);
+   drawResetButton();
+   drawInfoMenu();
+  } 
  // Pop Up Logic //
   if (!showMainMenu && !showPopUp && !triggeredPopUp && maze[player.y][player.x] === 2) {
     showPopUp = true;
@@ -438,6 +453,7 @@ function draw() {
     image(popUp.img, width / 2, height / 2, popUp.width * 0.8, popUp.height * 0.8);
     pop();
   }
+ }
 }
 
 
@@ -449,7 +465,7 @@ function drawMaze() {
     for (let x = 0; x < cols; x++) {
 
       if (maze[y][x] === 1) fill(89, 90, 92); // Walls tile colour
-       else if (maze[y][x] === 2) fill(255, 215, 0); // Trap tile colour
+       else if (maze[y][x] === 2) fill(220, 220, 220); // Trap tile colour
        else if (maze[y][x] === 3) fill(0, 255, 0); // Win tile colour
        else fill(233, 236, 240); // Path/empty tile colour
 
@@ -462,6 +478,7 @@ function drawMaze() {
     }
   }
 }
+
 
 
 // -- Game Controls -- //
@@ -484,6 +501,7 @@ function keyReleased() { keys[key] = false;
 }
  
 
+
 // --- Game Characters Data --- //
 
 // -- Player -- //
@@ -493,9 +511,9 @@ class Player {
     this.y = y;
     this.moveCooldown = 0;
   }
- // Player's Appearance  //
+ // Player's Appearance //
   show() {
-    fill(0); // Colour
+    fill(43, 89, 223); // Colour
     ellipse(offsetX + this.x * tileSize + tileSize / 2,
             offsetY + this.y * tileSize + tileSize / 2,
             tileSize * 0.8);
@@ -523,84 +541,126 @@ class Player {
   }
 }
 
-// -- Enemy -- // need to sort out
+// -- Enemy -- // 
 class Enemy {
-  constructor(x, y, alwaysChase=false, path=null){
+  constructor(x, y, alwaysChase = false, path = null) {
     this.x = x;
     this.y = y;
     this.alwaysChase = alwaysChase;
-    this.moveCooldownMax = alwaysChase ? 5 : 10;
+    // Chasers move more often
+    this.moveCooldownMax = alwaysChase ? 8 : 10;
     this.moveCooldown = 5;
-
-    // Patrol path for pattern movement
-    this.path = path; 
+    // Patrol path
+    this.path = path;  // Array of positions, e.g. [[3,2], [5,2], [5,4]]
     this.pathIndex = 0;
-    this.pathForward = true; // To loop back and forth along the path
+    this.pathForward = true; // Whether the patrol is moving forward
   }
 
+  // Enemy Appearances //
   show() {
-    fill(this.alwaysChase ? 'red' : 'blue');
-    rect(offsetX + this.x * tileSize, offsetY + this.y * tileSize, tileSize, tileSize);
+    if (this.alwaysChase) {
+      // Chasing enemy (hacker) colour
+      fill(229, 54, 44, 240);
+    } else {
+      // Patrolling enemy (virus) colour
+      fill(240, 179, 41, 240);
+    }
+
+    ellipse(
+      offsetX + this.x * tileSize + tileSize / 2,
+      offsetY + this.y * tileSize + tileSize / 2,
+      tileSize * 0.8,
+      tileSize * 0.8
+    );
   }
 
-  chase(player){
-    if (this.moveCooldown > 0){ 
-      this.moveCooldown--; 
-      return; 
+  //  Movement Behaviour  //
+  chase(player) {
+    if (this.moveCooldown > 0) {
+      this.moveCooldown--;
+      return;
     }
     this.moveCooldown = this.moveCooldownMax;
 
+    // Hacker always follow the player
     if (this.alwaysChase) {
-      // True chaser always moves toward the player
       this.moveTowards(player.x, player.y);
-    } else if (this.path) {
-      // Follow patrol path
-      let target = this.path[this.pathIndex];
-      if (this.x === target[0] && this.y === target[1]) {
-        if (this.pathForward) this.pathIndex++;
-        else this.pathIndex--;
-
-        if (this.pathIndex >= this.path.length) { 
-          this.pathIndex = this.path.length - 2; 
-          this.pathForward = false; 
-        }
-        if (this.pathIndex < 0) { 
-          this.pathIndex = 1; 
-          this.pathForward = true; 
-        }
-        target = this.path[this.pathIndex];
-      }
-      this.moveTowards(target[0], target[1]);
-    } else {
-      // Default random movement
-      this.randomMove();
+      return;
     }
+    // virus patrols the paths
+    if (this.path) {
+      this.followPath();
+      return;
+    }
+    // Random movement
+    this.randomMove();
   }
 
-  moveTowards(tx, ty){
-    let dx = tx - this.x;
-    let dy = ty - this.y;
+  // Patrol Movement //
+  followPath() {
+    let target = this.path[this.pathIndex];
+
+    // If reached the current path step
+    if (this.x === target[0] && this.y === target[1]) {
+
+      // Move forward or backward depending on direction
+      this.pathIndex += this.pathForward ? 1 : -1;
+
+      // If goes too far right, switch to backward mode
+      if (this.pathIndex >= this.path.length) {
+        this.pathIndex = this.path.length - 2;
+        this.pathForward = false;
+      }
+      // If goes too far left, switch to forward mode
+      if (this.pathIndex < 0) {
+        this.pathIndex = 1;
+        this.pathForward = true;
+      }
+      target = this.path[this.pathIndex];
+    }
+    this.moveTowards(target[0], target[1]);
+  }
+
+  // Chasing Movement //
+  moveTowards(targetX, targetY) {
+    let dx = targetX - this.x;
+    let dy = targetY - this.y;
     let moved = false;
 
-    if (abs(dx) > abs(dy)){
-      if (dx > 0 && maze[this.y][this.x + 1] === 0) { this.x++; moved = true; }
-      else if (dx < 0 && maze[this.y][this.x - 1] === 0) { this.x--; moved = true; }
+    // Move in the stronger direction first 
+    if (Math.abs(dx) > Math.abs(dy)) {
+      if (dx > 0 && maze[this.y][this.x + 1] === 0) {
+        this.x++;
+        moved = true;
+      } else if (dx < 0 && maze[this.y][this.x - 1] === 0) {
+        this.x--;
+        moved = true;
+      }
     }
-    if (!moved){
-      if (dy > 0 && maze[this.y + 1] && maze[this.y + 1][this.x] === 0) this.y++;
-      else if (dy < 0 && maze[this.y - 1] && maze[this.y - 1][this.x] === 0) this.y--;
+
+    // If didn't move, try other
+    if (!moved) {
+      if (dy > 0 && maze[this.y + 1][this.x] === 0) {
+        this.y++;
+      } else if (dy < 0 && maze[this.y - 1][this.x] === 0) {
+        this.y--;
+      }
     }
   }
 
-  randomMove(){
-    let moves = [];
-    if (maze[this.y][this.x + 1] === 0) moves.push([1,0]);
-    if (maze[this.y][this.x - 1] === 0) moves.push([-1,0]);
-    if (maze[this.y + 1] && maze[this.y + 1][this.x] === 0) moves.push([0,1]);
-    if (maze[this.y - 1] && maze[this.y - 1][this.x] === 0) moves.push([0,-1]);
-    if (moves.length > 0){
-      let m = moves[floor(random(moves.length))];
-      this.x += m[0]; this.y += m[1];
+  // Random Movement //
+  randomMove() {
+    let options = [];
+
+    if (maze[this.y][this.x + 1] === 0) options.push([1, 0]);
+    if (maze[this.y][this.x - 1] === 0) options.push([-1, 0]);
+    if (maze[this.y + 1] && maze[this.y + 1][this.x] === 0) options.push([0, 1]);
+    if (maze[this.y - 1] && maze[this.y - 1][this.x] === 0) options.push([0, -1]);
+
+    if (options.length > 0) {
+      let move = random(options);
+      this.x += move[0];
+      this.y += move[1];
     }
   }
 }

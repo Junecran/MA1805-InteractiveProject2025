@@ -28,7 +28,7 @@ Time constraints limited the scope of this project, so I prioritised establishin
 
 - Player movement posed a significant challenge, as the initial methods resulted in choppy motion. I found it undesirable to repeatedly press keys, so I implemented a 'holding the button down' approach. However, this adjustment made navigation through the maze's openings feel awkward. I intend to improve this aspect in future iterations.
 
-- The enemy AI initially performed poorly. After extensive trial and error, I developed a functional AI, though it does not provide an engaging challenge for players. To address this, I increased the enemy's speed, but I aim to enhance the AI's pathfinding in the future.
+- The enemy AI initially performed poorly and will get stuck on walls. After extensive trial and error, I developed a functional AI, though it does not provide an engaging challenge for players. To address this, I increased the enemy's speed, but i wish to explore AI's pathfinding in the future.
 
 - In my efforts to code more efficiently, I tried to consolidate variables and functions where possible. Despite this, I still feel the codebase has too many variables. Also, avoiding more accessible variables has made adjusting placements complicated.
 
@@ -36,7 +36,9 @@ Time constraints limited the scope of this project, so I prioritised establishin
 
 
 # [Maze Maker Tool](MazeMakerCode/index.html) - Extra Code
+
 **Quick Description**
+
 This code provides a fast and interactive way to create custom mazes by turning a simple grid into an editable map. By representing the maze as a 2D array where each cell is either a wall (1) or a path (0), the program allows users to visually design maze layouts rather than manually edit long arrays of numbers. 
 
 Each cell is drawn as a square: black for walls and white for open spaces. This visual feedback lets users instantly see how their maze looks and make adjustments on the fly.
@@ -54,8 +56,4 @@ The interactivity comes from the mousePressed() function. Clicking on any cell t
    Solve the maze to reach the green tile to win. However, beware of viruses and hackers that will hunt you down; touching them will cause a game over. Trap tiles will randomly appear to slow your progress. 
 
 ## Study Notes 
-- class
-- maybe else
-- the coollision check 
-- THis
--  constructor instead of let in classes
+ I Didnt Transfer the Notes from word this time to keep the README Shorter but if would have improved my grade let me know and next time i continue to add them.
