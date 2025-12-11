@@ -27,6 +27,8 @@ Time constraints limited the scope of this project, so I prioritised establishin
 
 - The enemy AI initially performed poorly and will get stuck on walls. After extensive trial and error, I developed a functional AI, though it does not provide an engaging challenge for players. To address this, I increased the enemy's speed, but i wish to explore AI's pathfinding in the future.
 
+-AI enemies occasionally block the path completely. While they do move after some time, waiting can be frustrating. I have implemented several solutions, but I am concerned these may make the maze too easy.
+
 - In my efforts to code more efficiently, I tried to consolidate variables and functions where possible. Despite this, I still feel the codebase has too many variables. Also, avoiding more accessible variables has made adjusting placements complicated.
 
 - Finally, I wish I had more time to develop the game's features. I intended the 'pop-ups' to appear more intrusive and randomised. I also wanted to experiment with the user interface style and create a more visually appealing maze and gameplay using modern UI menus, possibly combined with arcade game styles.
