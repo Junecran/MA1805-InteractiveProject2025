@@ -1,3 +1,9 @@
+**Eleanor Craner**
+
+[GitHub Link](https://github.com/Junecran/MA1805-InteractiveProject2025)
+
+[Website Link](https://junecran.github.io/MA1805-InteractiveProject2025/)
+
 # [Safety Search Game](SafetySearchGame/index.html)
 This maze game, inspired by Pac-Man, highlights the risks of navigating the internet. The enemies, modelled after Pac-Man's pursuers, represent hackers and scammers who exploit users, from nuisance calls to large-scale financial scams. Viruses are depicted as less aggressive enemies that move randomly, reflecting the threat of malicious links and compromised websites.
 
